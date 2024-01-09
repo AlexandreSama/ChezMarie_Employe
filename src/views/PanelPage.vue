@@ -14,7 +14,7 @@ let intervalId: number;
 
 onMounted(() => {
     fetchOrders();
-    intervalId = setInterval(fetchOrders, 5000);
+    intervalId = setInterval(fetchOrders, 15000);
 });
 
 onUnmounted(() => {
@@ -24,7 +24,7 @@ onUnmounted(() => {
 const changeCommandStatus = async (id: number, newState: string) => {
     updateCommandStatus(id, localStorage.getItem('user-token'), newState).then((response) => {
         console.log(response);
-        
+
         fetchOrders();
     });
 };
@@ -61,6 +61,7 @@ const formatDateTime = (timestamp: number) => {
                                 <th scope="col">Date de Commande</th>
                                 <th scope="col">Heure de Retrait Souhaitée</th>
                                 <th scope="col">Prix Total</th>
+                                <th scope="col">Status</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -71,12 +72,18 @@ const formatDateTime = (timestamp: number) => {
                                 <td>{{ order.customerAdress }}, {{ order.customerTown }}</td>
                                 <td>{{ formatDate(order.dateOrder.timestamp) }}</td>
                                 <td>{{ formatDateTime(order.desiredPickupDateTime.timestamp) }}</td>
-                                <td>{{ order.fullPrice }}</td>
-                                <td v-if="!order.isPending && !order.isNotServer">
+                                <td>{{ order.fullPrice }} €</td>
+                                <td>
+                                    <span v-if="order.isPending" class="badge bg-warning">En attente</span>
+                                    <span v-else-if="order.isNotServer" class="badge bg-danger">Non-récupéré</span>
+                                    <span v-else-if="order.isServed" class="badge bg-success">Récupéré</span>
+                                    <span v-else class="badge bg-info">En cours de préparation</span>
+                                </td>
+                                <td v-if="!order.isPending && !order.isNotServer && !order.isServed">
                                     <button class="btn btn-success"
                                         @click="changeCommandStatus(order.id, 'prepared')">Commande Préparée</button>
                                 </td>
-                                <td v-else-if="order.isNotServer">
+                                <td v-else-if="order.isNotServer || order.isServed">
 
                                 </td>
                                 <td v-else>
@@ -91,4 +98,5 @@ const formatDateTime = (timestamp: number) => {
                 </div>
             </div>
         </div>
-    </div></template>
+    </div>
+</template>
