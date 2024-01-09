@@ -10,11 +10,12 @@ async function handleLogin() {
     try {
         const token = await login(email.value, password.value);
         console.log(token)
-        // console.log("Logged in! Token:", token);
+        console.log("Logged in! Token:", token.data.token);
 
         // Stocker le token et rediriger l'utilisateur
-        // localStorage.setItem('user-token', token);
-        // goToPanel();
+        localStorage.setItem('user-token', token.data.token);
+        localStorage.setItem('user-email', token.data.user)
+        goToPanel();
     } catch (error) {
         console.error("Error during login:", error);
         // Gérer les erreurs ici, comme afficher un message à l'utilisateur
