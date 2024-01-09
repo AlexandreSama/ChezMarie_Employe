@@ -1,21 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { getOngoingOrders, updateCommandStatus } from '../functions/api';
 
-// Créez une référence réactive pour vos commandes
 const orders = ref<any[]>([]);
 
-// Récupérez les commandes lors du montage du composant
-getOngoingOrders(localStorage.getItem('user-token')).then((response) => {
-    orders.value = response['hydra:member'];
-    console.log(orders.value);
+const fetchOrders = () => {
+    getOngoingOrders(localStorage.getItem('user-token')).then((response) => {
+        orders.value = response['hydra:member'];
+    });
+};
+
+let intervalId: number;
+
+onMounted(() => {
+    fetchOrders();
+    intervalId = setInterval(fetchOrders, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(intervalId);
 });
 
 const changeCommandStatus = async (id: number, newState: string) => {
     updateCommandStatus(id, localStorage.getItem('user-token'), newState).then((response) => {
         console.log(response);
+        
+        fetchOrders();
     });
 };
+
 
 const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
