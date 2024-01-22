@@ -113,8 +113,8 @@ export async function updateCommandStatus(orderID: number, token: string | null,
                         'Content-Type': 'application/merge-patch+json'
                     }
                 });
+                return response.data;
             case 'served':
-
                 response = await axios.patch(`http://localhost:8000/api/orders/${orderID}`, {
                     is_served: true,
                     is_pending: false
