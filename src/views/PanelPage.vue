@@ -4,6 +4,7 @@ import { getOngoingOrders, updateCommandStatus } from '../functions/api';
 
 const orders = ref<any[]>([]);
 
+//Fetch all the orders and send them to the template
 const fetchOrders = () => {
     getOngoingOrders(localStorage.getItem('user-token')).then((response) => {
         orders.value = response['hydra:member'];
@@ -21,6 +22,7 @@ onUnmounted(() => {
     clearInterval(intervalId);
 });
 
+//Change the command status with the updateCommandStatus function and call the fetchOrders function
 const changeCommandStatus = async (id: number, newState: string) => {
     updateCommandStatus(id, localStorage.getItem('user-token'), newState).then((response) => {
         console.log(response);
@@ -43,6 +45,7 @@ const formatDateTime = (timestamp: number) => {
     }).format(date);
 };
 
+console.log(orders);
 </script>
 
 

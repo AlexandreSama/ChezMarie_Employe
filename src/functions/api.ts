@@ -20,7 +20,7 @@ export async function login(username: string, password: string) {
         let config = {
             method: 'POST',
             maxBodyLength: Infinity,
-            url: 'http://localhost:8000/api/login',
+            url: 'https://localhost:8000/api/login',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -45,7 +45,7 @@ export async function login(username: string, password: string) {
  */
 export async function getOngoingOrders(token: string | null) {
     try {
-        const response = await axios.get('http://localhost:8000/api/orders', {
+        const response = await axios.get('https://localhost:8000/api/orders', {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -80,7 +80,7 @@ export async function updateCommandStatus(orderID: number, token: string | null,
         let response;
         switch (newState) {
             case 'prepared':
-                response = await axios.patch(`http://localhost:8000/api/orders/${orderID}`, {
+                response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_preparing: false,
                     is_pending: true
                 }, {
@@ -92,7 +92,7 @@ export async function updateCommandStatus(orderID: number, token: string | null,
 
                 return response.data;
             case 'pending':
-                response = await axios.patch(`http://localhost:8000/api/orders/${orderID}`, {
+                response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_pending: false,
                     is_served: true
                 }, {
@@ -104,7 +104,7 @@ export async function updateCommandStatus(orderID: number, token: string | null,
 
                 return response.data;
             case 'not_served':
-                response = await axios.patch(`http://localhost:8000/api/orders/${orderID}`, {
+                response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_pending: false,
                     is_not_server: true
                 }, {
@@ -115,7 +115,7 @@ export async function updateCommandStatus(orderID: number, token: string | null,
                 });
                 return response.data;
             case 'served':
-                response = await axios.patch(`http://localhost:8000/api/orders/${orderID}`, {
+                response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_served: true,
                     is_pending: false
                 }, {
