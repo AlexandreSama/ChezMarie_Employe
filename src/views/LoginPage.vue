@@ -1,32 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { login } from '../functions/api';
-import router from '../router';
+import { useRouter } from 'vue-router';
+import { login } from '../functions/api'; // Make sure the path matches where your login function is defined
 
 const email = ref('');
 const password = ref('');
+const error = ref('');
+const isLoading = ref(false);
+const router = useRouter();
 
 async function handleLogin() {
+    isLoading.value = true;
     try {
-        const token = await login(email.value, password.value);
-        console.log(token)
-        console.log("Logged in! Token:", token.data.token);
+        const response = await login(email.value, password.value);
+        console.log("Logged in! Token:", response.data.token); // Adjust based on actual response structure
 
-        // Stocker le token et rediriger l'utilisateur
-        localStorage.setItem('user-token', token.data.token);
-        localStorage.setItem('user-email', token.data.user)
-        goToPanel();
-    } catch (error) {
-        console.error("Error during login:", error);
-        // Gérer les erreurs ici, comme afficher un message à l'utilisateur
+        // Store the token and redirect the user
+        localStorage.setItem('user-token', response.data.token); // Ensure this matches your token structure
+        localStorage.setItem('user-email', email.value);
+        router.push('/panel');
+    } catch (err) {
+        console.error("Error during login:", err);
+        error.value = "Login failed. Please check your credentials.";
+    } finally {
+        isLoading.value = false;
     }
 }
-
-function goToPanel() {
-    router.push('/panel');
-}
 </script>
-
 
 <template>
     <div class="container mt-5">
@@ -44,7 +44,13 @@ function goToPanel() {
                                 <label for="password" class="form-label">Mot de Passe</label>
                                 <input type="password" class="form-control" id="password" v-model="password" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                            <div v-if="error" class="alert alert-danger">{{ error }}</div>
+                            <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
+                                Se connecter
+                            </button>
+                            <div v-if="isLoading" class="text-center">
+                                <span>Loading...</span>
+                            </div>
                         </form>
                     </div>
                 </div>

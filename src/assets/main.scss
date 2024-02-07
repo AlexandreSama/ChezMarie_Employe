@@ -1,30 +1,33 @@
-$color-primary: #f8b400; // Exemple de couleur principale
-$color-secondary: #fff4e5; // Exemple de couleur secondaire
+$color-primary: #007bff; // Bleu Bootstrap par exemple
+$color-secondary: #f8f9fa; // Gris clair Bootstrap par exemple
+$color-success: #28a745;
+$color-warning: #ffc107;
+$color-danger: #dc3545;
+$color-info: #17a2b8;
 
 body {
     background-color: $color-secondary;
     font-family: 'Helvetica', sans-serif;
 }
 
-
-// Login
-.card {
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    border: none;
+.table {
+    th, td {
+        vertical-align: middle;
+    }
 }
 
-.btn-primary {
-    background-color: $color-primary;
+.badge {
+    &.bg-warning { background-color: $color-warning; }
+    &.bg-danger { background-color: $color-danger; }
+    &.bg-success { background-color: $color-success; }
+    &.bg-info { background-color: $color-info; }
+}
+
+.btn {
     border: none;
     &:hover {
-        background-color: darken($color-primary, 10%);
+        opacity: 0.8;
     }
+    &.btn-success { background-color: $color-success; }
+    &.btn-danger { background-color: $color-danger; }
 }
-
-// Responsive design adjustments
-@media (max-width: 768px) {
-    .card {
-        padding: 2rem 1rem; // Reduce padding on smaller screens
-    }
-}
-

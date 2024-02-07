@@ -37,12 +37,14 @@ export async function login(username: string, password: string) {
 }
 
 /**
- * The function `getOngoingOrders` makes an asynchronous HTTP GET request to retrieve ongoing orders
- * from a specified API endpoint, using a provided token for authorization.
- * @param {string | null} token - The `token` parameter is a string that represents the authentication
- * token used to authorize the request. It is passed in the `Authorization` header as a bearer token.
- * @returns the data received from the API call to get ongoing orders.
- */
+    La fonction getOngoingOrders effectue une requête HTTP GET asynchrone pour récupérer les commandes en cours
+    à partir d'une URL d'API spécifiée, en utilisant un jeton d'authentification fourni pour l'autorisation.
+    @param {string | null} token - Le paramètre token est une chaîne de caractères représentant le jeton
+    d'authentification utilisé pour autoriser la requête. Il est inclus dans l'en-tête Authorization en tant
+    que jeton porteur.
+    @returns les données reçues de l'appel à l'API pour obtenir les commandes en cours.
+    
+*/
 export async function getOngoingOrders(token: string | null) {
     try {
         const response = await axios.get('https://localhost:8000/api/orders', {
@@ -62,24 +64,25 @@ export async function getOngoingOrders(token: string | null) {
 }
 
 /**
- * The `updateCommandStatus` function is used to update the status of an order by making a PATCH
- * request to the server with the new state.
- * @param {number} orderID - The `orderID` parameter is the ID of the order that needs to be updated.
- * It is of type `number`.
- * @param {string | null} token - The `token` parameter is a string that represents the authentication
- * token required to access the API. It is used in the `Authorization` header of the HTTP request to
- * authenticate the user making the request. If the token is `null`, it means that the user is not
- * authenticated and the request will not
- * @param {string} newState - The `newState` parameter is a string that represents the new state of the
- * command. It can have one of the following values:
- * @returns the data from the response of the axios patch request.
- */
+    La fonction updateCommandStatus est une fonction asynchrone qui met à jour le statut d'une commande
+    en fonction de l'ID de commande, du jeton et du nouveau statut fournis.
+    @param {number} orderID - Le paramètre orderID est l'identifiant unique de la commande à mettre à
+    jour. Il est de type nombre.
+    @param {string | null} token - Le paramètre token est une chaîne de caractères représentant le jeton
+    d'authentification nécessaire pour accéder à l'API. Il est utilisé dans l'en-tête Authorization de
+    la requête HTTP pour authentifier l'utilisateur effectuant la requête. Si le jeton est null, cela
+    signifie que l'utilisateur n'est pas authentifié et la requête sera refusée.
+    @param {string} newState - Le paramètre newState est une chaîne de caractères représentant le nouveau
+    statut de la commande. Il peut avoir l'une des valeurs suivantes :
+    @returns les données de la réponse HTTP après l'envoi de la requête PATCH pour mettre à jour le statut
+    de la commande.
+*/
 export async function updateCommandStatus(orderID: number, token: string | null, newState: string) {
-
     try {
         let response;
         switch (newState) {
             case 'prepared':
+                // Envoyer une requête PATCH pour marquer la commande comme préparée
                 response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_preparing: false,
                     is_pending: true
@@ -89,9 +92,10 @@ export async function updateCommandStatus(orderID: number, token: string | null,
                         'Content-Type': 'application/merge-patch+json'
                     }
                 });
-
+                // Retourner les données de la réponse HTTP
                 return response.data;
             case 'pending':
+                // Envoyer une requête PATCH pour marquer la commande comme en attente
                 response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_pending: false,
                     is_served: true
@@ -101,20 +105,23 @@ export async function updateCommandStatus(orderID: number, token: string | null,
                         'Content-Type': 'application/merge-patch+json'
                     }
                 });
-
+                // Retourner les données de la réponse HTTP
                 return response.data;
             case 'not_served':
+                // Envoyer une requête PATCH pour marquer la commande comme non servie
                 response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_pending: false,
-                    is_not_server: true
+                    is_not_served: true
                 }, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/merge-patch+json'
                     }
                 });
+                // Retourner les données de la réponse HTTP
                 return response.data;
             case 'served':
+                // Envoyer une requête PATCH pour marquer la commande comme servie
                 response = await axios.patch(`https://localhost:8000/api/orders/${orderID}`, {
                     is_served: true,
                     is_pending: false
@@ -124,13 +131,15 @@ export async function updateCommandStatus(orderID: number, token: string | null,
                         'Content-Type': 'application/merge-patch+json'
                     }
                 });
-
+                // Retourner les données de la réponse HTTP
                 return response.data;
             default:
                 break;
         }
     } catch (error) {
+        // Gérer les erreurs en affichant un message d'erreur dans la console
         console.error("An error occurred during commandPrepared:", error);
+        // Lancer à nouveau l'erreur pour que le code appelant puisse la gérer
         throw error;
     }
 }
