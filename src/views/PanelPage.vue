@@ -15,7 +15,7 @@ let intervalId: number;
 
 onMounted(() => {
     fetchOrders();
-    intervalId = setInterval(fetchOrders, 15000);
+    intervalId = setInterval(fetchOrders, 35000);
 });
 
 onUnmounted(() => {
@@ -84,16 +84,16 @@ console.log(orders);
                                 </td>
                                 <td v-if="!order.isPending && !order.isNotServer && !order.isServed">
                                     <button class="btn btn-success"
-                                        @click="changeCommandStatus(order.id, 'prepared')">Commande Préparée</button>
+                                        @click="changeCommandStatus(order.id, 'prepared')">Marquer comme Préparée</button>
                                 </td>
                                 <td v-else-if="order.isNotServer || order.isServed">
 
                                 </td>
                                 <td v-else>
                                     <button class="btn btn-success"
-                                        @click="changeCommandStatus(order.id, 'served')">Commande récupéré</button>
+                                        @click="changeCommandStatus(order.id, 'served')">Marquer comme récupéré</button>
                                     <button class="btn btn-danger"
-                                        @click="changeCommandStatus(order.id, 'not_served')">Commande non-récupéré</button>
+                                        @click="changeCommandStatus(order.id, 'not_served')">Marquer comme non-récupéré</button>
                                 </td>
                             </tr>
                         </tbody>
