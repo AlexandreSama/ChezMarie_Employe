@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { getOngoingOrders, updateCommandStatus } from '../functions/api';
 
 const orders = ref<any[]>([]);
+const selectedOrder = ref<any>(null);
 
 //Fetch all the orders and send them to the template
 const fetchOrders = () => {
@@ -31,6 +32,23 @@ const changeCommandStatus = async (id: number, newState: string) => {
     });
 };
 
+// Open modal function
+function openModal(order: any) {
+    selectedOrder.value = order;
+    const modal = document.getElementById("myModal");
+    if (modal) {
+        modal.style.display = "block";
+    }
+}
+
+// Close modal function
+function closeModal() {
+    const modal = document.getElementById("myModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
@@ -45,6 +63,7 @@ const formatDateTime = (timestamp: number) => {
     }).format(date);
 };
 
+
 console.log(orders);
 </script>
 
@@ -58,9 +77,9 @@ console.log(orders);
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
+                                <th scope="col">Référence</th>
                                 <th scope="col">Client</th>
-                                <th scope="col">Adresse</th>
+                                <th scope="col">Produits</th>
                                 <th scope="col">Date de Commande</th>
                                 <th scope="col">Heure de Retrait Souhaitée</th>
                                 <th scope="col">Prix Total</th>
@@ -70,9 +89,9 @@ console.log(orders);
                         </thead>
                         <tbody v-for="order in orders" :key="order.id">
                             <tr>
-                                <th scope="row">{{ order.id }}</th>
+                                <th scope="row">{{ order.reference }}</th>
                                 <td>{{ order.customerFirstName }} {{ order.customerName }}</td>
-                                <td>{{ order.customerAdress }}, {{ order.customerTown }}</td>
+                                <td><a href="#" @click="openModal(order)">Voir les produits</a></td>
                                 <td>{{ formatDate(order.dateOrder.timestamp) }}</td>
                                 <td>{{ formatDateTime(order.desiredPickupDateTime.timestamp) }}</td>
                                 <td>{{ order.fullPrice }} €</td>
@@ -90,16 +109,28 @@ console.log(orders);
 
                                 </td>
                                 <td v-else>
-                                    <button class="btn btn-success"
-                                        @click="changeCommandStatus(order.id, 'served')">Marquer comme récupéré</button>
+                                    <button class="btn btn-success" @click="changeCommandStatus(order.id, 'served')">Marquer
+                                        comme récupéré</button>
                                     <button class="btn btn-danger"
-                                        @click="changeCommandStatus(order.id, 'not_served')">Marquer comme non-récupéré</button>
+                                        @click="changeCommandStatus(order.id, 'not_served')">Marquer comme
+                                        non-récupéré</button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" @click="closeModal">&times;</span>
+            <ul v-if="selectedOrder">
+                <li v-for="archive in selectedOrder.archives" :key="archive.id">
+                    {{ archive.productName }} - Quantité: {{ archive.productQuantity }}
+                </li>
+            </ul>
         </div>
     </div>
 </template>
