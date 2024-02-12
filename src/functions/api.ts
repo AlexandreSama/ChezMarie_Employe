@@ -11,7 +11,6 @@ import axios from 'axios';
  */
 export async function login(username: string, password: string) {
     try {
-
         let data = JSON.stringify({
             "username": username,
             "password": password
@@ -31,8 +30,8 @@ export async function login(username: string, password: string) {
 
         return response;
     } catch (error) {
-        console.error("An error occurred during login:", error);
-        throw error;
+        // Renvoyer l'erreur complète ou juste le message d'erreur
+        throw error; // On propage l'erreur pour la gérer dans la fonction `handleLogin`
     }
 }
 

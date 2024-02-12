@@ -2,23 +2,32 @@
 import { ref } from 'vue';
 import { login } from '../functions/api';
 import router from '../router';
+import axios from 'axios';
 
 const email = ref('');
 const password = ref('');
 
 async function handleLogin() {
     try {
-        const token = await login(email.value, password.value);
-        console.log(token)
-        console.log("Logged in! Token:", token.data.token);
+        const response = await login(email.value, password.value);
 
         // Stocker le token et rediriger l'utilisateur
-        localStorage.setItem('user-token', token.data.token);
-        localStorage.setItem('user-email', token.data.user)
+        localStorage.setItem('user-token', response.data.token);
+        localStorage.setItem('user-email', response.data.user);
         goToPanel();
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error during login:", error);
-        // Gérer les erreurs ici, comme afficher un message à l'utilisateur
+        
+        // Vérifier si l'erreur est une instance d'une erreur Axios
+        if (axios.isAxiosError(error)) {
+            // Maintenant, TypeScript sait que `error` est une erreur Axios
+            const message = error.response?.data?.message || error.message;
+            // Afficher le message d'erreur à l'utilisateur
+            alert(message);
+        } else {
+            // Si ce n'est pas une erreur Axios, c'est une autre sorte d'erreur
+            alert("Une erreur inconnue est survenue.");
+        }
     }
 }
 
